@@ -1,12 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:convert';
-
-import 'package:flutter/material.dart';
+import 'dart:ui';
+import 'package:flutter/material.dart' hide ModalBottomSheetRoute;
 import 'package:forecastify/components/Reusbale_tile.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:http/http.dart' as http;
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,13 +21,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       AnimationController(duration: const Duration(seconds: 1), vsync: this)
         ..repeat();
 
-  static String apiKey = "e61b4ab38a5c4e9286b185545241103";
-  String location = "London"; //default
+  static String apiKey = "7001fba4a0d54e748d9114117242203";
+  String location = "london"; //default
   String weathericon = "assets/wind.png";
   int temperature = 0;
   int windspeed = 0;
   int humidity = 0;
-  int cloud = 0;
+  double precep = 0.0;
   String currentDate = "";
   List hourlyWeatherForecasts = [];
   List dailyWeatherForecasts = [];
@@ -34,38 +35,43 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   String currentWeatherStatus = "";
 
   String searchWeatherApi =
-      "http://api.weatherapi.com/v1/forecast.json?key=$apiKey&days=7&q=";
+      "https://api.weatherapi.com/v1/forecast.json?key=$apiKey%20&&days=7&q=";
 
   void fetchWeatherData(String searchtext) async {
-    try {
-      var searchResult =
-          await http.get(Uri.parse(searchWeatherApi + searchtext));
+    var searchResult = await http.get(Uri.parse(searchWeatherApi + searchtext));
+    print(searchResult);
+    if (searchResult.statusCode == 200) {
+      try {
+        final weatherData =
+            Map<String, dynamic>.from(jsonDecode(searchResult.body));
+        var locationData = weatherData["location"];
+        var currentWeather = weatherData["current"];
 
-      final weatherData =
-          Map<String, dynamic>.from(jsonDecode(searchResult.body));
-      var locationData = weatherData["location"];
-      var currentWeather = weatherData["current"];
+        setState(() {
+          location = getShortLocationName(locationData["name"]);
+          //update time
+          var parsedDate =
+              DateTime.parse(locationData["localtime"].substring(0, 10));
+          var newDate = DateFormat('MMMMEEEEd').format(parsedDate);
+          currentDate = newDate;
 
-      setState(() {
-        location = getShortLocationName(locationData["name"]);
-        //update time
-        var parsedDate =
-            DateTime.parse(locationData["localtime"].substring(0, 10));
-        var newDate = DateFormat('MMMEEEEd').format(parsedDate);
-        currentDate = newDate;
-
-        //update weatherstatus
-        currentWeatherStatus = currentWeather['condition']['text'];
-        weathericon =
-            "${currentWeatherStatus.replaceAll(" ", "").toLowerCase()}.png";
-        temperature = currentWeather["temp_c"].toInt();
-        windspeed = currentWeather["wind_kph"].toInt();
-        humidity = currentWeather["humidity"].toInt();
-        cloud = currentWeather["cloud"].toInt();
-        print(currentWeather);
-      });
-    } catch (e) {
-      throw Exception(e.toString());
+          //update weatherstatus
+          if (weatherData.isNotEmpty) {
+            currentWeatherStatus = currentWeather['condition']['text'];
+            weathericon =
+                "${currentWeatherStatus.replaceAll(" ", "").toLowerCase()}.png";
+            temperature = currentWeather["temp_c"].toInt();
+            windspeed = currentWeather["wind_kph"].toInt();
+            humidity = currentWeather["humidity"].toInt();
+            precep = ((locationData["precip_mm"].toInt()) / 0.1) * 100;
+            print(currentWeather);
+          }
+        });
+      } catch (e) {
+        throw Exception(e.toString());
+      }
+    } else {
+      CircularProgressIndicator();
     }
   }
 
@@ -73,7 +79,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     List<String> wordList = s.split(" ");
     if (wordList.isNotEmpty) {
       if (wordList.length > 1) {
-        return wordList[0] + " " + wordList[1];
+        return "${wordList[0]} ${wordList[1]}";
       } else {
         return wordList[0];
       }
@@ -98,6 +104,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController locationController = TextEditingController();
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: const Color(0xff5842a9),
@@ -125,254 +132,321 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           padding: EdgeInsets.symmetric(
             vertical: size.height * 0.03,
           ),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: SizedBox(
-              width: size.width,
-              height: size.height,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.location_on_outlined,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                      Text(
-                        location,
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: size.height * 0.030,
-                  ),
-                  Text(
-                    currentWeatherStatus.toString(),
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Stack(
+          child: SingleChildScrollView(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: SizedBox(
+                width: size.width,
+                height: size.height,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Positioned(
-                          left: 10,
-                          top: 40,
-                          child: Opacity(
-                            opacity: 0.6,
-                            child: Lottie.asset(
-                              'assets/PJ7QlLsBT3.json',
-                              controller: _controller,
-                              height: 185,
-                            ),
-                          ),
+                        Icon(
+                          Icons.location_on_outlined,
+                          color: Colors.white,
+                          size: 28,
                         ),
                         Text(
-                          '$temperature°',
+                          location,
                           style: TextStyle(
-                            fontSize: 120,
+                            fontSize: 25,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
+                        IconButton(
+                          onPressed: () {
+                            locationController.clear();
+                            showMaterialModalBottomSheet(
+                              context: context,
+                              builder: (context) => SingleChildScrollView(
+                                controller: ModalScrollController.of(context),
+                                child: Container(
+                                  height: size.height * .5,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 10,
+                                  ),
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Color(0xff955cd1),
+                                        Color(0xff362A84),
+                                      ],
+                                      begin: Alignment.bottomCenter,
+                                      end: Alignment.topCenter,
+                                    ),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        width: 70,
+                                        child: Divider(
+                                          thickness: 3.5,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      TextField(
+                                        onChanged: (location) =>
+                                            fetchWeatherData(location),
+                                        controller: locationController,
+                                        autofocus: true,
+                                        decoration: InputDecoration(
+                                          prefixIcon: Icon(
+                                            Icons.search,
+                                            color: Colors.white,
+                                          ),
+                                          suffixIcon: IconButton(
+                                            onPressed: () {
+                                              locationController.clear();
+                                            },
+                                            icon: Icon(
+                                              Icons.close,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          icon: Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                  Text(
-                    currentDate,
-                    style: TextStyle(
-                      color: Colors.white,
+                    SizedBox(
+                      height: size.height * 0.01,
                     ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.03,
-                  ),
-                  Container(
-                    width: size.width * 0.85,
-                    height: size.height * 0.2,
-                    decoration: BoxDecoration(
-                      color: const Color(0xff331c71),
-                      borderRadius: BorderRadius.circular(16),
+                    Text(
+                      currentWeatherStatus.toString(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                      ),
                     ),
-                    child: const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 30),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Align(
+                      alignment: Alignment.center,
+                      child: Stack(
                         children: [
-                          Column(
-                            children: [
-                              Image(
-                                image: AssetImage(
-                                  "assets/protection.png",
-                                ),
-                                height: 30,
+                          Positioned(
+                            left: 10,
+                            top: 40,
+                            child: Opacity(
+                              opacity: 0.6,
+                              child: Lottie.asset(
+                                'assets/PJ7QlLsBT3.json',
+                                controller: _controller,
+                                height: 185,
                               ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                '30%',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                'Precipitation',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                ),
-                              )
-                            ],
+                            ),
                           ),
-                          Column(
-                            children: [
-                              Image(
-                                image: AssetImage(
-                                  "assets/droplet.png",
-                                ),
-                                height: 30,
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                '20%',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                'Humidity',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                ),
-                              )
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Image(
-                                image: AssetImage(
-                                  "assets/wind.png",
-                                ),
-                                height: 30,
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                '9 KM/h',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                'Wind Speed',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                ),
-                              )
-                            ],
+                          Text(
+                            '$temperature°',
+                            style: TextStyle(
+                              fontSize: 120,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.020,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Today',
-                          style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Text(
-                          '7-Day Forecasts',
-                          style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      currentDate,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.020,
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        ReusableTile(
-                          image: 'assets/droplet.png',
-                          time: "10 AM",
-                          temp: "15",
-                        ),
-                        ReusableTile(
-                          image: 'assets/droplet.png',
-                          time: "11 AM",
-                          temp: "17",
-                        ),
-                        ReusableTile(
-                          image: 'assets/protection.png',
-                          time: "12 AM",
-                          temp: "17",
-                        ),
-                        ReusableTile(
-                          image: 'assets/protection.png',
-                          time: "1 PM",
-                          temp: "18",
-                        ),
-                        ReusableTile(
-                          image: 'assets/wind.png',
-                          time: "2 PM",
-                          temp: "18",
-                        ),
-                        ReusableTile(
-                          image: 'assets/wind.png',
-                          time: "3 PM",
-                          temp: "18",
-                        ),
-                        ReusableTile(
-                          image: 'assets/wind.png',
-                          time: "4 PM",
-                          temp: "18",
-                        ),
-                      ],
+                    SizedBox(
+                      height: size.height * 0.03,
                     ),
-                  ),
-                ],
+                    Container(
+                      width: size.width * 0.85,
+                      height: size.height * 0.2,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff331c71),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 30),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              children: [
+                                Image(
+                                  image: AssetImage(
+                                    "assets/protection.png",
+                                  ),
+                                  height: 30,
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  '${precep.toStringAsFixed(2)}%',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  'Precipitation',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Image(
+                                  image: AssetImage(
+                                    "assets/droplet.png",
+                                  ),
+                                  height: 30,
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  '$humidity%',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  'Humidity',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Image(
+                                  image: AssetImage(
+                                    "assets/wind.png",
+                                  ),
+                                  height: 30,
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  '$windspeed KM/h',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  'Wind Speed',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: size.height * 0.020,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Today',
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            '7-Day Forecasts',
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: size.height * 0.020,
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          ReusableTile(
+                            image: 'assets/droplet.png',
+                            time: "10 AM",
+                            temp: "15",
+                          ),
+                          ReusableTile(
+                            image: 'assets/droplet.png',
+                            time: "11 AM",
+                            temp: "17",
+                          ),
+                          ReusableTile(
+                            image: 'assets/protection.png',
+                            time: "12 AM",
+                            temp: "17",
+                          ),
+                          ReusableTile(
+                            image: 'assets/protection.png',
+                            time: "1 PM",
+                            temp: "18",
+                          ),
+                          ReusableTile(
+                            image: 'assets/wind.png',
+                            time: "2 PM",
+                            temp: "18",
+                          ),
+                          ReusableTile(
+                            image: 'assets/wind.png',
+                            time: "3 PM",
+                            temp: "18",
+                          ),
+                          ReusableTile(
+                            image: 'assets/wind.png',
+                            time: "4 PM",
+                            temp: "18",
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
