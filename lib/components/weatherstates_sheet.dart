@@ -79,12 +79,13 @@ class WeatherStates extends StatelessWidget {
                   "assets/cloud.png",
                 ),
                 height: 30,
+                width: 50,
               ),
               const SizedBox(
                 height: 10,
               ),
               Text(
-                '${cloud.toStringAsFixed(2)}%',
+                cloud.toString(),
                 style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.bold,

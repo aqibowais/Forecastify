@@ -61,7 +61,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                       ),
                       suffixIcon: IconButton(
                         onPressed: () => locationController.clear(),
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.close,
                           color: Colors.white,
                         ),
