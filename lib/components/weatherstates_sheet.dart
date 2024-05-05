@@ -11,97 +11,105 @@ class WeatherStates extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            children: [
-              const Image(
-                image: AssetImage(
-                  "assets/wind.png",
+    Size size = MediaQuery.of(context).size;
+    return Container(
+      width: size.width * 0.85,
+      height: size.height * 0.2,
+      decoration: BoxDecoration(
+        color: const Color(0xff331c71),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              children: [
+                Image(
+                  image: const AssetImage(
+                    "assets/wind.png",
+                  ),
+                  height: size.height * 0.05,
                 ),
-                height: 30,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                '$windspeed KM/h',
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                const SizedBox(
+                  height: 10,
                 ),
-              ),
-              const Text(
-                'Wind Speed',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
+                Text(
+                  '$windspeed KM/h',
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              )
-            ],
-          ),
-          Column(
-            children: [
-              const Image(
-                image: AssetImage(
-                  "assets/droplet.png",
+                const Text(
+                  'Wind Speed',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                )
+              ],
+            ),
+            Column(
+              children: [
+                Image(
+                  image: const AssetImage(
+                    "assets/droplet.png",
+                  ),
+                  height: size.height * 0.05,
                 ),
-                height: 30,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                '$humidity%',
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                const SizedBox(
+                  height: 10,
                 ),
-              ),
-              const Text(
-                'Humidity',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
+                Text(
+                  '$humidity%',
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              )
-            ],
-          ),
-          Column(
-            children: [
-              const Image(
-                image: AssetImage(
-                  "assets/cloud.png",
+                const Text(
+                  'Humidity',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                )
+              ],
+            ),
+            Column(
+              children: [
+                Image(
+                  image: const AssetImage(
+                    "assets/cloud.png",
+                  ),
+                  height: size.height * 0.05,
                 ),
-                height: 30,
-                width: 50,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                cloud.toString(),
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                const SizedBox(
+                  height: 10,
                 ),
-              ),
-              const Text(
-                'Cloud',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
+                Text(
+                  cloud.toString(),
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              )
-            ],
-          ),
-        ],
+                const Text(
+                  'Cloud',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

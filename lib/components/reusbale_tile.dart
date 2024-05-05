@@ -24,6 +24,7 @@ class _ReusableTileState extends State<ReusableTile> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 15),
       margin: const EdgeInsets.symmetric(horizontal: 10),
+      height: 125,
       width: 65,
       decoration: BoxDecoration(
           gradient: LinearGradient(

@@ -23,7 +23,9 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
           builder: (context) => SingleChildScrollView(
             controller: ModalScrollController.of(context),
             child: Container(
-              height: size.height * .5,
+              // height: size.height * .6,
+              height:
+                  MediaQuery.of(context).viewInsets.bottom + size.height * .2,
               padding: const EdgeInsets.symmetric(
                 horizontal: 20,
                 vertical: 10,
@@ -51,10 +53,25 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                     height: 10,
                   ),
                   TextField(
+                    cursorColor: Colors.white60,
                     onChanged: widget.onChanged,
                     controller: locationController,
                     autofocus: true,
                     decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      hintText: "Enter Location",
+                      hintStyle: TextStyle(color: Colors.white38),
                       prefixIcon: const Icon(
                         Icons.search,
                         color: Colors.white,
