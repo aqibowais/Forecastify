@@ -19,11 +19,11 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
       onPressed: () {
         locationController.clear();
         showMaterialModalBottomSheet(
+          bounce: true,
           context: context,
           builder: (context) => SingleChildScrollView(
             controller: ModalScrollController.of(context),
             child: Container(
-              // height: size.height * .6,
               height:
                   MediaQuery.of(context).viewInsets.bottom + size.height * .2,
               padding: const EdgeInsets.symmetric(
@@ -53,6 +53,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                     height: 10,
                   ),
                   TextField(
+                    style: TextStyle(color: Colors.white),
                     cursorColor: Colors.white60,
                     onChanged: widget.onChanged,
                     controller: locationController,
@@ -94,7 +95,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
       icon: const Icon(
         Icons.search,
         color: Colors.white,
-        size: 28,
+        size: 30,
       ),
     );
   }
