@@ -181,9 +181,9 @@ class _DetailScreenState extends State<DetailScreen>
                             ),
                           ),
                           Positioned(
-                            left: 15,
+                            left: 20,
                             right: 0,
-                            top: 30,
+                            top: 5,
                             bottom: 0,
                             child: Center(
                               child: Text(
