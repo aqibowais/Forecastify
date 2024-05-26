@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class WeatherManager {
   static String apiKey = "7001fba4a0d54e748d9114117242203";
-  String location = "Pakistan"; //default
+  String location = "karachi"; //default
   Future<Map<String, dynamic>> fetchWeatherData(String searchtext) async {
     String searchWeatherApi =
         "https://api.weatherapi.com/v1/forecast.json?key=$apiKey%20&&days=7&q=";

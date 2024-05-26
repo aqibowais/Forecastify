@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
-// ignore: must_be_immutable
 class WeatherStates extends StatelessWidget {
-  int windspeed, humidity, cloud;
-  WeatherStates(
-      {super.key,
-      required this.humidity,
-      required this.cloud,
-      required this.windspeed});
+  final int windspeed, humidity, cloud;
+
+  WeatherStates({
+    Key? key,
+    required this.humidity,
+    required this.cloud,
+    required this.windspeed,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,85 +28,67 @@ class WeatherStates extends StatelessWidget {
             Column(
               children: [
                 Image(
-                  image: const AssetImage(
-                    "assets/wind.png",
-                  ),
+                  image: const AssetImage("assets/wind.png"),
                   height: size.height * 0.05,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Text(
                   '$windspeed KM/h',
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-                const Text(
+                Text(
                   'Wind Speed',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                )
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Colors.white,
+                      ),
+                ),
               ],
             ),
             Column(
               children: [
                 Image(
-                  image: const AssetImage(
-                    "assets/droplet.png",
-                  ),
+                  image: const AssetImage("assets/droplet.png"),
                   height: size.height * 0.05,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Text(
                   '$humidity%',
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-                const Text(
+                Text(
                   'Humidity',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                )
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Colors.white,
+                      ),
+                ),
               ],
             ),
             Column(
               children: [
                 Image(
-                  image: const AssetImage(
-                    "assets/cloud.png",
-                  ),
+                  image: const AssetImage("assets/cloud.png"),
                   height: size.height * 0.05,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Text(
                   cloud.toString(),
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-                const Text(
+                Text(
                   'Cloud',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                )
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Colors.white,
+                      ),
+                ),
               ],
             ),
           ],
