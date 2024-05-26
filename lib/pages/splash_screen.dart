@@ -47,8 +47,8 @@ class _SplashScreenState extends State<SplashScreen>
         decoration: const BoxDecoration(
             gradient: LinearGradient(
                 colors: [
-                  Color(0xff955cd1),
-                  Color(0xff362A84),
+                  Color(0xff331c71),
+                  Color(0xff5842A9),
                 ],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
@@ -63,22 +63,16 @@ class _SplashScreenState extends State<SplashScreen>
             const SizedBox(
               height: 20,
             ),
-            const Text(
+            Text(
               'Weather',
-              style: TextStyle(
-                  fontSize: 30,
-                  letterSpacing: 1,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white),
+              style: Theme.of(context).textTheme.displayMedium,
             ),
-            const Text(
+            Text(
               'FORECASTIFY',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 2,
-                color: Colors.white,
-              ),
+              style: Theme.of(context)
+                  .textTheme
+                  .displayMedium!
+                  .copyWith(letterSpacing: 1),
             ),
           ],
         ),

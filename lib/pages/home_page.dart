@@ -72,14 +72,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: Padding(
-          padding: EdgeInsets.all(10.0),
-          child: CircleAvatar(
-            radius: 20,
-            child: Icon(Icons.person),
-          ),
-        ),
-        actions: [
-          CustomBottomSheet(
+          padding: const EdgeInsets.all(10.0),
+          child: CustomBottomSheet(
             onChanged: (location) async {
               try {
                 weatherData = await weathermanager.fetchWeatherData(location);
@@ -91,23 +85,28 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               }
             },
           ),
-          IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return Refresher();
-                },
-              );
-              _refreshData();
-            },
-            icon: _isRefreshing
-                ? CircularProgressIndicator()
-                : Icon(
-                    Icons.refresh,
-                    color: Colors.white,
-                    size: 30,
-                  ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Refresher();
+                  },
+                );
+                _refreshData();
+              },
+              icon: _isRefreshing
+                  ? CircularProgressIndicator()
+                  : Icon(
+                      Icons.refresh,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+            ),
           ),
         ],
       ),
@@ -316,4 +315,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
     );
   }
+
+  void _selectImage() {}
 }

@@ -14,11 +14,19 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen>
     with TickerProviderStateMixin {
-  late final AnimationController _controller =
-      AnimationController(duration: const Duration(seconds: 1), vsync: this)
-        ..repeat();
+  late final AnimationController _controller;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _controller =
+        AnimationController(duration: const Duration(seconds: 1), vsync: this)
+          ..repeat();
+  }
+
   Map<String, dynamic> weatherData = {};
   bool _isRefreshing = false;
+
   @override
   void dispose() {
     _controller.dispose();
