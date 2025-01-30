@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     setState(() {
       _isRefreshing = false;
     });
+    // ignore: use_build_context_synchronously
     Navigator.of(context).pop();
   }
 
